@@ -1,29 +1,35 @@
 import asyncio
 import websockets
 
-async def send_message(message):
+async def send_message(message,client_socket):
     for client in users:
         await client.send(message)
 
 async def get_message(client_socket):
-    data = await client_handler.recv()
+    data = await client_socket.recv()
+
     print(data)
 
     return data
-
+    
 users = []
 
 async def client_handler(client_socket):
-    print('Подключен новый пользователь')
+    try:
 
-    users.append(users)
+        print('Подключен новый пользователь')
 
-    while True:
-        message = await get_message(client_socket)
-        await send_message(message)
+        users.append(client_socket)
+
+        while True:
+            message = await get_message(client_socket)
+            await send_message(message, client_socket)
+    
+    except Exception as e:
+        users.remove(client_socket)
 
 async def server():
-    await websockets.serve(client_handler, 'localhost', 12345)
+    await websockets.serve(client_handler, 'localhost', 1234)
 
 if __name__ == "__main__":
     event_loop = asyncio.new_event_loop()
