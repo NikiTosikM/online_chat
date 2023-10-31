@@ -20,7 +20,8 @@ async def client_handler(client_socket):
 
         print('Подключен новый пользователь')
 
-        await client_socket.send(f'{users[client_socket]} вошел в чат !')
+        for client in users:
+            await client_socket.send(f'{users[client]} вошел в чат !')
 
         while True:
             message = await get_message(client_socket)
