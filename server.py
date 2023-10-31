@@ -3,30 +3,31 @@ import websockets
 
 async def send_message(message,client_socket):
     for client in users:
-        await client.send(message)
+        await client.send(f'{users[client_socket]} : {message}')
 
 async def get_message(client_socket):
     data = await client_socket.recv()
 
-    print(data)
-
     return data
     
-users = []
+users = {}
 
 async def client_handler(client_socket):
     try:
+        date = await client_socket.recv()
+
+        users[client_socket] = date
 
         print('Подключен новый пользователь')
 
-        users.append(client_socket)
+        await client_socket.send(f'{users[client_socket]} вошел в чат !')
 
         while True:
             message = await get_message(client_socket)
             await send_message(message, client_socket)
     
     except Exception as e:
-        users.remove(client_socket)
+        del users[client_socket]
 
 async def server():
     await websockets.serve(client_handler, 'localhost', 1234)
